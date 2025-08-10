@@ -115,3 +115,4 @@ if score_enabled:
 
 if st.button("Nieuw woord"):
     nieuw_woord()
+    st.experimental_rerun()
