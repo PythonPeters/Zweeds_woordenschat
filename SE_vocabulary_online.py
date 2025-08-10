@@ -41,7 +41,6 @@ if "woord" not in st.session_state:
     st.session_state.richting = "Zweeds → Nederlands"
     st.session_state.kleur = "black"
     st.session_state.feedback = ""
-    st.session_state.next_word_time = None
     nieuw_woord()
 
 # --- Controlefunctie ---
@@ -57,7 +56,6 @@ def controleer():
             st.session_state.feedback = f"❌ Fout! Juist was: {st.session_state.juist}"
             if score_enabled:
                 st.session_state.score -= 1
-        st.session_state.next_word_time = time.time() + 1  # 1 sec later nieuw woord
 
 # --- Titel ---
 st.title("🇸🇪 Zweeds Woordenschat Trainer")
@@ -99,7 +97,6 @@ if timer_enabled and st.session_state.start_time:
             if score_enabled:
                 st.session_state.score -= 1
             st.session_state.tijd_op = True
-            st.session_state.next_word_time = time.time() + 1
 
 # --- Antwoordveld ---
 st.text_input(
@@ -117,8 +114,7 @@ if st.session_state.feedback:
 if score_enabled:
     st.write(f"**Score:** {st.session_state.score}")
 
-# --- Wissel naar nieuw woord als de tijd er is ---
-if st.session_state.next_word_time and time.time() >= st.session_state.next_word_time:
+# --- Knop voor nieuw woord ---
+if st.button("Nieuw woord"):
     nieuw_woord()
-    st.session_state.next_word_time = None
     st.rerun()
