@@ -32,12 +32,14 @@ def nieuw_woord():
     st.session_state["feedback"] = ""
     if "antwoord" in st.session_state:
         del st.session_state["antwoord"]
+        st.session_state["feedback"] = ""
+        st.session_state["kleur"] = "black"
 
 if "woord" not in st.session_state:
     st.session_state["score"] = 0
     st.session_state["richting"] = "Zweeds → Nederlands"
     nieuw_woord()
-
+    
 def controleer():
     if not st.session_state.get("tijd_op", False):
         antwoord = st.session_state.get("antwoord", "").strip().lower()
@@ -52,6 +54,9 @@ def controleer():
             st.session_state["feedback"] = f"❌ Fout! Juist was: {st.session_state.get('juist','')}"
             if score_enabled:
                 st.session_state["score"] -= 1
+
+# dummy key voor refresh
+dummy = st.session_state.get("refresh", False)
 
 st.title("🇸🇪 Zweeds Woordenschat Trainer")
 
@@ -115,4 +120,4 @@ if score_enabled:
 
 if st.button("Nieuw woord"):
     nieuw_woord()
-    st.experimental_rerun()
+    st.session_state["refresh"] = not st.session_state.get("refresh", False)
