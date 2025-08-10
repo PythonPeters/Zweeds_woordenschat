@@ -55,7 +55,7 @@ def controleer():
         st.session_state.feedback = st.session_state.kleur
         time.sleep(1)
         nieuw_woord()
-        st.experimental_rerun()
+        st.rerun()  # <- FIX
 
 # --- Titel ---
 st.title("🇸🇪 Zweeds Woordenschat Trainer")
@@ -99,10 +99,10 @@ if timer_enabled and st.session_state.start_time:
             st.session_state.tijd_op = True
             time.sleep(1)
             nieuw_woord()
-            st.experimental_rerun()
+            st.rerun()  # <- FIX
 
 # --- Antwoordveld met directe controle ---
-antwoord = st.text_input(
+st.text_input(
     "Jouw vertaling:",
     value=st.session_state.antwoord,
     key="antwoord",
