@@ -4,7 +4,8 @@ import time
 
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
-GITHUB_EXCEL_URL = "https://github.com/PythonPeters/Zweeds_woordenschat/raw/main/woorden.xlsx"
+# GITHUB_EXCEL_URL = "https://github.com/PythonPeters/Zweeds_woordenschat/raw/main/woorden.xlsx"
+GITHUB_EXCEL_URL = "https://github.com/PythonPeters/Zweeds_woordenschat/blob/main/woorden.xlsx"
 
 @st.cache_data
 def laad_woordenlijst(url):
@@ -104,3 +105,4 @@ if st.session_state.woord:
 
 else:
     st.info("⬆️ Klik op 'Nieuw woord' om te beginnen.")
+
