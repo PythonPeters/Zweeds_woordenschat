@@ -32,6 +32,7 @@ def nieuw_woord():
     st.session_state.tijd_op = False
     st.session_state.antwoord = ""
     st.session_state.kleur = "black"
+    st.session_state.feedback = ""
 
 # --- Init session state ---
 if "woord" not in st.session_state:
@@ -39,6 +40,8 @@ if "woord" not in st.session_state:
     st.session_state.antwoord = ""
     st.session_state.richting = "Zweeds → Nederlands"
     st.session_state.kleur = "black"
+    st.session_state.feedback = ""
+    st.session_state.next_word_time = None
     nieuw_woord()
 
 # --- Controlefunctie ---
@@ -46,16 +49,15 @@ def controleer():
     if not st.session_state.tijd_op:
         if st.session_state.antwoord.strip().lower() == st.session_state.juist.lower():
             st.session_state.kleur = "green"
+            st.session_state.feedback = "✅ Goed!"
             if score_enabled:
                 st.session_state.score += 1
         else:
             st.session_state.kleur = "red"
+            st.session_state.feedback = f"❌ Fout! Juist was: {st.session_state.juist}"
             if score_enabled:
                 st.session_state.score -= 1
-        st.session_state.feedback = st.session_state.kleur
-        time.sleep(1)
-        nieuw_woord()
-        st.rerun()  # <- FIX
+        st.session_state.next_word_time = time.time() + 1  # 1 sec later nieuw woord
 
 # --- Titel ---
 st.title("🇸🇪 Zweeds Woordenschat Trainer")
@@ -79,7 +81,7 @@ timer_secs = 10
 if timer_enabled:
     timer_secs = st.number_input("Aantal seconden per woord", min_value=3, max_value=60, value=10)
 
-# --- Toon woord met kleur ---
+# --- Toon woord ---
 st.markdown(
     f"<h2 style='color:{st.session_state.kleur};'>Vertaal: {st.session_state.woord}</h2>",
     unsafe_allow_html=True
@@ -93,15 +95,13 @@ if timer_enabled and st.session_state.start_time:
     else:
         if not st.session_state.tijd_op:
             st.session_state.kleur = "red"
-            st.warning(f"⏰ Tijd voorbij! Juist was: **{st.session_state.juist}**")
+            st.session_state.feedback = f"⏰ Tijd voorbij! Juist was: {st.session_state.juist}"
             if score_enabled:
                 st.session_state.score -= 1
             st.session_state.tijd_op = True
-            time.sleep(1)
-            nieuw_woord()
-            st.rerun()  # <- FIX
+            st.session_state.next_word_time = time.time() + 1
 
-# --- Antwoordveld met directe controle ---
+# --- Antwoordveld ---
 st.text_input(
     "Jouw vertaling:",
     value=st.session_state.antwoord,
@@ -109,6 +109,16 @@ st.text_input(
     on_change=controleer
 )
 
+# --- Feedback tonen ---
+if st.session_state.feedback:
+    st.write(st.session_state.feedback)
+
 # --- Score ---
 if score_enabled:
     st.write(f"**Score:** {st.session_state.score}")
+
+# --- Wissel naar nieuw woord als de tijd er is ---
+if st.session_state.next_word_time and time.time() >= st.session_state.next_word_time:
+    nieuw_woord()
+    st.session_state.next_word_time = None
+    st.rerun()
