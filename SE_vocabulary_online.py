@@ -24,9 +24,9 @@ richting = st.radio(
 
 col1, col2 = st.columns(2)
 with col1:
-    score_enabled = st.checkbox("Score bijhouden", value=True)
+    score_enabled = st.checkbox("Score bijhouden", value=False)
 with col2:
-    timer_enabled = st.checkbox("Timer gebruiken", value=True)
+    timer_enabled = st.checkbox("Timer gebruiken", value=False)
 
 timer_secs = 10
 if timer_enabled:
