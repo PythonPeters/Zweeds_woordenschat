@@ -7,7 +7,7 @@ from io import BytesIO
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
 # === Instellingen ===
-dropbox_url = "https://www.dropbox.com/scl/fi/4gs3ccprk97a5qjtefmk9/woorden-All.xlsx?rlkey=p4wrbilpb8v5cyb8uzq9i9um7&st=8rs9gc87&dl=1"  # <-- Pas dit aan
+dropbox_url = "https://www.dropbox.com/scl/fi/4gs3ccprk97a5qjtefmk9/woorden-All.xlsx?rlkey=p4wrbilpb8v5cyb8uzq9i9um7&st=8rs9gc87&dl=0"  # <-- Pas dit aan
 
 # === Woordenlijst laden ===
 try:
@@ -124,3 +124,4 @@ if st.session_state.woord:
     # Score tonen
     if score_enabled:
         st.write(f"**Score:** {st.session_state.score}")
+
