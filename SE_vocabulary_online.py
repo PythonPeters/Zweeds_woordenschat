@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import random
 import time
 import requests
 from io import BytesIO
@@ -8,7 +7,7 @@ from io import BytesIO
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
 # === Instellingen ===
-dropbox_url = "https://www.dropbox.com/scl/fi/4gs3ccprk97a5qjtefmk9/woorden-All.xlsx?rlkey=p4wrbilpb8v5cyb8uzq9i9um7&st=8rs9gc87&dl=1"  # <-- Pas dit aan
+dropbox_url = "https://www.dropbox.com/s/abc123xyz/woorden.xlsx?dl=1"  # <-- Pas dit aan
 
 # === Woordenlijst laden ===
 try:
@@ -32,16 +31,16 @@ richting = st.radio(
 # Opties
 col1, col2 = st.columns(2)
 with col1:
-    score_enabled = st.checkbox("Score bijhouden", value=True)
+    score_enabled = st.checkbox("Score bijhouden", value=False)
 with col2:
-    timer_enabled = st.checkbox("Timer gebruiken", value=True)
+    timer_enabled = st.checkbox("Timer gebruiken", value=False)
 
 # Timer-instelling
 timer_secs = 10
 if timer_enabled:
     timer_secs = st.number_input("Aantal seconden per woord", min_value=3, max_value=60, value=10)
 
-# Sessiestate
+# Sessiestate initialiseren
 if "woord" not in st.session_state:
     st.session_state.woord = None
     st.session_state.juist = None
@@ -50,6 +49,7 @@ if "woord" not in st.session_state:
     st.session_state.tijd_op = False
     st.session_state.resultaat = ""
     st.session_state.antwoord = ""
+    st.session_state.auto_nieuw = False  # Nieuw vlaggetje
 
 # Nieuw woord functie
 def nieuw_woord():
@@ -64,6 +64,7 @@ def nieuw_woord():
     st.session_state.tijd_op = False
     st.session_state.antwoord = ""
     st.session_state.resultaat = ""
+    st.session_state.auto_nieuw = False
 
 # Controle functie
 def controleer():
@@ -72,12 +73,18 @@ def controleer():
             st.session_state.resultaat = "✅ Juist!"
             if score_enabled:
                 st.session_state.score += 1
+            st.session_state.auto_nieuw = True  # Zet vlag aan
         else:
             st.session_state.resultaat = f"❌ Fout. Juist was: {st.session_state.juist}"
             if score_enabled:
                 st.session_state.score -= 1
 
-# Nieuw woord knop
+# Automatisch nieuw woord na juist antwoord
+if st.session_state.auto_nieuw:
+    time.sleep(1)
+    nieuw_woord()
+
+# Knop voor nieuw woord
 if st.button("Nieuw woord"):
     nieuw_woord()
 
