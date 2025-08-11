@@ -7,7 +7,7 @@ from io import BytesIO
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
 # === Instellingen ===
-dropbox_url = "https://www.dropbox.com/s/abc123xyz/woorden.xlsx?dl=1"  # <-- Pas dit aan
+dropbox_url = "https://www.dropbox.com/scl/fi/4gs3ccprk97a5qjtefmk9/woorden-All.xlsx?rlkey=p4wrbilpb8v5cyb8uzq9i9um7&st=8rs9gc87&dl=1"  # <-- Pas dit aan
 
 # === Woordenlijst laden ===
 try:
@@ -20,7 +20,7 @@ except Exception as e:
     st.stop()
 
 # === Titel ===
-st.title("🇸🇪 Zweedse Woordenschat Trainer")
+st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
 
 # Richting kiezen
 richting = st.radio(
