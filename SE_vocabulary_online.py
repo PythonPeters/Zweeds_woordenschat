@@ -22,7 +22,7 @@ if dropbox_link:
         # Excel downloaden vanuit Dropbox
         response = requests.get(dropbox_link)
         response.raise_for_status()
-        df = pd.read_excel(BytesIO(response.content), header=None)
+        df = pd.read_excel(BytesIO(response.content), header=None, engine="openpyxl")
         df.columns = ["Zweeds", "Nederlands"]
 
         # Richting kiezen
