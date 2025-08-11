@@ -4,7 +4,7 @@ import time
 
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
-# === Titel ===
+# Titel
 st.title("🇸🇪 Zweedse Woordenschat Trainer")
 
 # Bestand uploaden
@@ -36,7 +36,7 @@ if uploaded_file:
     if timer_enabled:
         timer_secs = st.number_input("Aantal seconden per woord", min_value=3, max_value=60, value=10)
 
-    # Sessiestate initialiseren
+    # Sessiestate initialiseren (veilige defaults)
     if "woord" not in st.session_state:
         st.session_state.woord = None
         st.session_state.juist = None
@@ -45,9 +45,10 @@ if uploaded_file:
         st.session_state.tijd_op = False
         st.session_state.resultaat = ""
         st.session_state.antwoord = ""
-        st.session_state.auto_nieuw = False
+        st.session_state.auto_next = False        # pending auto-advance
+        st.session_state.performed_reload = False # helper-flag voor reload-logica
 
-    # Nieuw woord functie
+    # Functie om nieuw woord te kiezen
     def nieuw_woord():
         rij = df.sample().iloc[0]
         if richting == "Zweeds → Nederlands":
@@ -60,27 +61,42 @@ if uploaded_file:
         st.session_state.tijd_op = False
         st.session_state.antwoord = ""
         st.session_state.resultaat = ""
-        st.session_state.auto_nieuw = False
+        st.session_state.auto_next = False
+        st.session_state.performed_reload = False
 
-    # Controle functie
+    # Controle functie die door Enter (on_change) getriggerd wordt
     def controleer():
         if not st.session_state.tijd_op:
-            if st.session_state.antwoord.strip().lower() == st.session_state.juist.lower():
+            antwoord = st.session_state.get("antwoord", "").strip().lower()
+            juist = st.session_state.get("juist", "").strip().lower()
+            if antwoord != "" and antwoord == juist:
                 st.session_state.resultaat = "✅ Juist!"
                 if score_enabled:
                     st.session_state.score += 1
-                st.session_state.auto_nieuw = True
+                # zet flags voor de reload-sequentie
+                st.session_state.auto_next = True
+                st.session_state.performed_reload = False
             else:
-                st.session_state.resultaat = f"❌ Fout. Juist was: {st.session_state.juist}"
+                st.session_state.resultaat = f"❌ Fout. Juist was: {st.session_state.get('juist','')}"
                 if score_enabled:
                     st.session_state.score -= 1
 
-    # Automatisch nieuw woord na juist antwoord
-    if st.session_state.auto_nieuw:
-        time.sleep(1)
-        nieuw_woord()
+    # Als er een auto-next pending is: eerst injecteer reload (één keer),
+    # na reload (performed_reload True) voeren we nieuw_woord() uit.
+    if st.session_state.auto_next:
+        if not st.session_state.performed_reload:
+            # toon de feedback (onder) en vraag browser om na 1s opnieuw te laden
+            # zodat de gebruiker de feedback ziet vóór we naar het volgende woord gaan.
+            # We zetten performed_reload True zodat we niet blijven herladen.
+            st.session_state.performed_reload = True
+            # de reload wordt ingevoegd zodra de pagina gerenderd is:
+            js = "<script>setTimeout(()=>location.reload(), 1000);</script>"
+            st.markdown(js, unsafe_allow_html=True)
+        else:
+            # De pagina is herladen nadat de gebruiker de feedback zag -> kies nieuw woord
+            nieuw_woord()
 
-    # Knop voor nieuw woord
+    # Knop voor nieuw woord (handmatig)
     if st.button("Nieuw woord"):
         nieuw_woord()
 
@@ -95,7 +111,7 @@ if uploaded_file:
                 st.info(f"⏳ Tijd: {resterend} sec")
             else:
                 if not st.session_state.tijd_op:
-                    st.session_state.resultaat = f"⏰ Tijd voorbij! Juist was: **{st.session_state.juist}**"
+                    st.session_state.resultaat = f"⏰ Tijd voorbij! Juist was: {st.session_state.juist}"
                     if score_enabled:
                         st.session_state.score -= 1
                     st.session_state.tijd_op = True
@@ -108,11 +124,11 @@ if uploaded_file:
             on_change=controleer
         )
 
-        # Resultaat tonen
+        # Resultaat tonen (onderaan)
         if st.session_state.resultaat:
-            if "✅" in st.session_state.resultaat:
+            if st.session_state.resultaat.startswith("✅"):
                 st.success(st.session_state.resultaat)
-            elif "❌" in st.session_state.resultaat:
+            elif st.session_state.resultaat.startswith("❌"):
                 st.error(st.session_state.resultaat)
             else:
                 st.warning(st.session_state.resultaat)
