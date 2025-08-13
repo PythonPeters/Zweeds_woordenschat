@@ -2,11 +2,9 @@ import streamlit as st
 import pandas as pd
 import time
 
-#v10
-
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
-st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
+st.title("🇸🇪 Zweedse Woordenschat Trainer")
 
 # Upload Excelbestand
 uploaded_file = st.file_uploader("Upload je woordenlijst (Excel)", type=["xlsx"])
@@ -28,7 +26,7 @@ if uploaded_file:
     with col1:
         score_enabled = st.checkbox("Score bijhouden", value=True)
     with col2:
-        timer_enabled = st.checkbox("Timer gebruiken", value=True)
+        timer_enabled = st.checkbox("Timer gebruiken", value=False)
 
     timer_secs = 10
     if timer_enabled:
@@ -46,7 +44,7 @@ if uploaded_file:
         st.session_state.auto_next = False
         st.session_state.performed_reload = False
         st.session_state.is_new_word = False
-        st.session_state.antwoord_verwerkt = False  # NIEUW
+        st.session_state.antwoord_verwerkt = False
 
     # Nieuw woord
     def nieuw_woord():
@@ -64,11 +62,10 @@ if uploaded_file:
         st.session_state.auto_next = False
         st.session_state.performed_reload = False
         st.session_state.is_new_word = True
-        st.session_state.antwoord_verwerkt = False  # reset
+        st.session_state.antwoord_verwerkt = False
 
     # Controlefunctie
     def controleer():
-        # Niet opnieuw controleren als het al gedaan is
         if st.session_state.antwoord_verwerkt:
             return
 
@@ -77,7 +74,7 @@ if uploaded_file:
             return
 
         st.session_state.is_new_word = False
-        st.session_state.antwoord_verwerkt = True  # markeer als verwerkt
+        st.session_state.antwoord_verwerkt = True
 
         if not st.session_state.tijd_op:
             antwoord = st.session_state.antwoord.strip().lower()
@@ -87,21 +84,25 @@ if uploaded_file:
                 if score_enabled:
                     st.session_state.score += 1
                 st.session_state.auto_next = True
+                st.session_state.next_delay = 1  # 1 seconde wachten
                 st.session_state.performed_reload = False
             elif antwoord != "":
                 st.session_state.resultaat = f"❌ Fout. Juist was: {st.session_state.juist}"
                 if score_enabled:
                     st.session_state.score -= 1
+                st.session_state.auto_next = True
+                st.session_state.next_delay = 2  # 2 seconden wachten
+                st.session_state.performed_reload = False
 
     # Knop nieuw woord
     if st.button("Nieuw woord"):
         nieuw_woord()
 
-    # Automatisch nieuw woord na correct antwoord
+    # Automatisch nieuw woord na juist of fout antwoord
     if st.session_state.auto_next:
         if not st.session_state.performed_reload:
             st.session_state.performed_reload = True
-            time.sleep(1)
+            time.sleep(st.session_state.get("next_delay", 1))
             nieuw_woord()
 
     # Eerste woord als er nog geen is
@@ -125,7 +126,7 @@ if uploaded_file:
                         st.session_state.score -= 1
                     st.session_state.tijd_op = True
 
-        # Antwoordveld met Enter-ondersteuning
+        # Antwoordveld
         st.text_input(
             "Jouw vertaling:",
             value=st.session_state.antwoord,
