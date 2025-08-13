@@ -6,7 +6,7 @@ import time
 
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
-st.title("🇸🇪 Zweedse Woordenschat Trainer")
+st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
 
 # Upload Excelbestand
 uploaded_file = st.file_uploader("Upload je woordenlijst (Excel)", type=["xlsx"])
@@ -28,7 +28,7 @@ if uploaded_file:
     with col1:
         score_enabled = st.checkbox("Score bijhouden", value=True)
     with col2:
-        timer_enabled = st.checkbox("Timer gebruiken", value=True)
+        timer_enabled = st.checkbox("Timer gebruiken", value=False)
     with col3:
         if st.button("🔄 Reset score"):
             st.session_state.score = 0
