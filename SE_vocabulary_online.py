@@ -6,7 +6,7 @@ import time
 
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
-st.title("🇸🇪 Zweedse Woordenschat Trainer")
+st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
 
 # Upload Excelbestand
 uploaded_file = st.file_uploader("Upload je woordenlijst (Excel)", type=["xlsx"])
@@ -45,7 +45,8 @@ if uploaded_file:
         st.session_state.antwoord = ""
         st.session_state.auto_next = False
         st.session_state.performed_reload = False
-        st.session_state.is_new_word = False  # fix vlag
+        st.session_state.is_new_word = False
+        st.session_state.antwoord_verwerkt = False  # NIEUW
 
     # Nieuw woord
     def nieuw_woord():
@@ -62,15 +63,22 @@ if uploaded_file:
         st.session_state.resultaat = ""
         st.session_state.auto_next = False
         st.session_state.performed_reload = False
-        st.session_state.is_new_word = True  # vlag aan bij nieuw woord
+        st.session_state.is_new_word = True
+        st.session_state.antwoord_verwerkt = False  # reset
 
     # Controlefunctie
     def controleer():
-        # alleen skippen als antwoord leeg is bij nieuw woord
+        # Niet opnieuw controleren als het al gedaan is
+        if st.session_state.antwoord_verwerkt:
+            return
+
         if st.session_state.is_new_word and st.session_state.antwoord.strip() == "":
             st.session_state.is_new_word = False
             return
-        st.session_state.is_new_word = False  # vlag uit na eerste controle
+
+        st.session_state.is_new_word = False
+        st.session_state.antwoord_verwerkt = True  # markeer als verwerkt
+
         if not st.session_state.tijd_op:
             antwoord = st.session_state.antwoord.strip().lower()
             juist = st.session_state.juist.strip().lower()
@@ -125,7 +133,7 @@ if uploaded_file:
             on_change=controleer
         )
 
-        # Controleer-knop terug
+        # Controleer-knop
         if st.button("Controleer"):
             controleer()
 
