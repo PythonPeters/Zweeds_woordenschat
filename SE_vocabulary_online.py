@@ -2,11 +2,11 @@ import streamlit as st
 import pandas as pd
 import time
 
-#ersie10
+#v10
 
 st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
 
-st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
+st.title("🇸🇪 Zweedse Woordenschat Trainer")
 
 # Upload Excelbestand
 uploaded_file = st.file_uploader("Upload je woordenlijst (Excel)", type=["xlsx"])
@@ -45,7 +45,7 @@ if uploaded_file:
         st.session_state.antwoord = ""
         st.session_state.auto_next = False
         st.session_state.performed_reload = False
-        st.session_state.is_new_word = False  # Nieuw toegevoegd
+        st.session_state.is_new_word = False  # fix vlag
 
     # Nieuw woord
     def nieuw_woord():
@@ -62,25 +62,26 @@ if uploaded_file:
         st.session_state.resultaat = ""
         st.session_state.auto_next = False
         st.session_state.performed_reload = False
-        st.session_state.is_new_word = True  # Zet vlag
+        st.session_state.is_new_word = True  # vlag aan bij nieuw woord
 
     # Controlefunctie
     def controleer():
-        # Voorkom scorewijziging direct na 'Nieuw woord'
-        if st.session_state.is_new_word:
+        # alleen skippen als antwoord leeg is bij nieuw woord
+        if st.session_state.is_new_word and st.session_state.antwoord.strip() == "":
             st.session_state.is_new_word = False
             return
+        st.session_state.is_new_word = False  # vlag uit na eerste controle
         if not st.session_state.tijd_op:
-            antwoord = st.session_state.get("antwoord", "").strip().lower()
-            juist = st.session_state.get("juist", "").strip().lower()
+            antwoord = st.session_state.antwoord.strip().lower()
+            juist = st.session_state.juist.strip().lower()
             if antwoord != "" and antwoord == juist:
                 st.session_state.resultaat = "✅ Juist!"
                 if score_enabled:
                     st.session_state.score += 1
                 st.session_state.auto_next = True
                 st.session_state.performed_reload = False
-            else:
-                st.session_state.resultaat = f"❌ Fout. Juist was: {st.session_state.get('juist','')}"
+            elif antwoord != "":
+                st.session_state.resultaat = f"❌ Fout. Juist was: {st.session_state.juist}"
                 if score_enabled:
                     st.session_state.score -= 1
 
@@ -116,13 +117,17 @@ if uploaded_file:
                         st.session_state.score -= 1
                     st.session_state.tijd_op = True
 
-        # Antwoordveld
+        # Antwoordveld met Enter-ondersteuning
         st.text_input(
             "Jouw vertaling:",
             value=st.session_state.antwoord,
             key="antwoord",
             on_change=controleer
         )
+
+        # Controleer-knop terug
+        if st.button("Controleer"):
+            controleer()
 
         # Resultaat tonen
         if st.session_state.resultaat:
