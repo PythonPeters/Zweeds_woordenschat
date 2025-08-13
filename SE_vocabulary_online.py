@@ -169,9 +169,9 @@ if uploaded_file:
         # Statistieken
         if st.session_state.aantal_ingaves > 0:
             percentage = (st.session_state.aantal_correct / st.session_state.aantal_ingaves) * 100
-            st.write(f"**Aantal ingaves:** {st.session_state.aantal_ingaves}")
-            st.write(f"**Juiste antwoorden:** {st.session_state.aantal_correct}")
-            st.write(f"**Foute antwoorden:** {st.session_state.aantal_fout}")
+            #st.write(f"**Aantal ingaves:** {st.session_state.aantal_ingaves}")
+            #st.write(f"**Juiste antwoorden:** {st.session_state.aantal_correct}")
+            #st.write(f"**Foute antwoorden:** {st.session_state.aantal_fout}")
             st.write(f"**Percentage correct:** {percentage:.1f}%")
 
 else:
