@@ -4,7 +4,7 @@ import time
 
 #versie12 - definitief
 
-st.set_page_config(page_title="Zweeds Trainer", page_icon="🇸🇪")
+st.set_page_config(page_title="Zweeds Trainer", page_icon="se.png")
 st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
 
 # Upload Excelbestand
