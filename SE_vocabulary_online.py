@@ -4,10 +4,23 @@ import time
 
 #versie12 - definitief
 
-st.set_page_config(page_title="Zweeds Trainer", page_icon="se.png")
+# 🔹 Pagina-instellingen
+st.set_page_config(
+    page_title="Zweeds Trainer", 
+    page_icon="se.png")
+
+# 🔹 Extra HTML voor iOS snelkoppeling icoon
+st.markdown(
+    """
+    <link rel="apple-touch-icon" sizes="180x180" href="icoon.png">
+    """,
+    unsafe_allow_html=True
+    )
+
 st.title("🇸🇪 Ella's Zweedse Woordenschat Trainer")
 
 # Upload Excelbestand
+
 uploaded_file = st.file_uploader("Upload je woordenlijst (Excel)", type=["xlsx"])
 
 if uploaded_file:
