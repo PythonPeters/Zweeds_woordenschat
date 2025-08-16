@@ -12,7 +12,7 @@ st.set_page_config(
 # 🔹 Extra HTML voor iOS snelkoppeling icoon
 st.markdown(
     """
-    <link rel="apple-touch-icon" sizes="180x180" href="https://github.com/PythonPeters/Zweeds_woordenschat/blob/main/icoon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/PythonPeters/Zweeds_woordenschat/blob/main/icoon.png">
     """,
     unsafe_allow_html=True
     )
@@ -189,6 +189,7 @@ if uploaded_file:
 
 else:
     st.info("⬆️ Upload een Excelbestand om te beginnen.")
+
 
 
 
